@@ -8,7 +8,6 @@ var ChatCollection = Backbone.Collection.extend({
   model: ChatModel,
   url: 'http://tiny-lasagna-server.herokuapp.com/collections/messages',
   parse: function(data){
-  console.log(data);
     return data;
   }
 });
