@@ -8,12 +8,13 @@ require('backbone-react-component');
 
 var ChatForm = React.createClass({displayName: "ChatForm",
   mixins: [Backbone.React.Component.mixin],
-  handleSubmit: function(){
+  handleSubmit: function(e){
+    e.preventDefault();
     var postChat = $('.context').val();
+    console.log('props collection', this.props.collection);
     this.props.collection.create({
-      chat: postChat
+      'content': postChat
     });
-
   },
   render: function(){
     return(
@@ -50,34 +51,15 @@ require('backbone-react-component');
 
 var ChatList = React.createClass({displayName: "ChatList",
   mixins: [Backbone.React.Component.mixin],
-  getInitialState: function(){
-    return {
-      content: "",
-      time: moment(new Date()).fromNow(),
-      chatCollection: this.props.collection
-    }
-  },
-
-  fetchData: function(){
+  componentDidMount: function(){
     this.props.collection.fetch();
-  },
-
-  handlePostChat: function(e){
-    e.preventDefault();
-    this.setState({
-        content: $('.postChat').val(),
-        time: moment(new Date()).fromNow()
-    })
-    this.props.collection.create({content: this.state.content, time: this.state.time})
   },
     render: function(){
       var messages = this.props.collection.map(function(model){
         return (
-          React.createElement("div", null, 
-            React.createElement("div", {key: model.get('_id')}, 
-              React.createElement("span", null, model.get('content')), 
-              React.createElement("span", null, model.get('time'))
-            )
+          React.createElement(MessageComponent, {
+             key: model.get('_id') + Math.random(), 
+             message: model}
           )
         )
       });
@@ -89,6 +71,16 @@ var ChatList = React.createClass({displayName: "ChatList",
         )
       );
     }
+});
+
+var MessageComponent = React.createClass({displayName: "MessageComponent",
+  render: function(){
+    return (
+      React.createElement("div", null, 
+        React.createElement("span", null, this.props.message.get("content"))
+      )
+    );
+  }
 });
 
 module.exports = ChatList
@@ -109,8 +101,6 @@ var ChatListing = require('./components/listing.jsx');
 // var ChatApp = chatInfo.ChatApp;
 
 var appCollection = new models.ChatCollection();
-
-appCollection.fetch();
   ReactDOM.render(
     React.createElement(ChatListing, {collection: appCollection}),
     document.getElementById('container')
@@ -132,9 +122,7 @@ var ChatModel = Backbone.Model.extend({
 var ChatCollection = Backbone.Collection.extend({
   model: ChatModel,
   url: 'http://tiny-lasagna-server.herokuapp.com/collections/messages',
-  parse: function(data){
-    return data;
-  }
+
 });
 
 module.exports = {

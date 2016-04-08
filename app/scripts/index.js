@@ -12,8 +12,6 @@ var ChatListing = require('./components/listing.jsx');
 // var ChatApp = chatInfo.ChatApp;
 
 var appCollection = new models.ChatCollection();
-
-appCollection.fetch();
   ReactDOM.render(
     React.createElement(ChatListing, {collection: appCollection}),
     document.getElementById('container')

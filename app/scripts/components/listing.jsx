@@ -8,35 +8,16 @@ require('backbone-react-component');
 
 var ChatList = React.createClass({
   mixins: [Backbone.React.Component.mixin],
-  getInitialState: function(){
-    return {
-      content: "",
-      time: moment(new Date()).fromNow(),
-      chatCollection: this.props.collection
-    }
-  },
-
-  fetchData: function(){
+  componentDidMount: function(){
     this.props.collection.fetch();
-  },
-
-  handlePostChat: function(e){
-    e.preventDefault();
-    this.setState({
-        content: $('.postChat').val(),
-        time: moment(new Date()).fromNow()
-    })
-    this.props.collection.create({content: this.state.content, time: this.state.time})
   },
     render: function(){
       var messages = this.props.collection.map(function(model){
         return (
-          <div>
-            <div key={model.get('_id')}>
-              <span>{model.get('content')}</span>
-              <span>{model.get('time')}</span>
-            </div>
-          </div>
+          <MessageComponent
+             key = {model.get('_id') + Math.random()}
+             message = {model}
+          />
         )
       });
       return (
@@ -47,6 +28,16 @@ var ChatList = React.createClass({
         </div>
       );
     }
+});
+
+var MessageComponent = React.createClass({
+  render: function(){
+    return (
+      <div>
+        <span>{this.props.message.get("content")}</span>
+      </div>
+    );
+  }
 });
 
 module.exports = ChatList

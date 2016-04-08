@@ -6,12 +6,13 @@ require('backbone-react-component');
 
 var ChatForm = React.createClass({
   mixins: [Backbone.React.Component.mixin],
-  handleSubmit: function(){
+  handleSubmit: function(e){
+    e.preventDefault();
     var postChat = $('.context').val();
+    console.log('props collection', this.props.collection);
     this.props.collection.create({
-      chat: postChat
+      'content': postChat
     });
-
   },
   render: function(){
     return(
